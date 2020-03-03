@@ -10,7 +10,7 @@ const port = 3000;
 
 //connect to db
 // mongoose.connect('mongodb+srv://alexisAdmin:qEtuouteq123.@anode-xdocc.mongodb.net/test?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true})
-mongoose.connect(`mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER_NAME}.mongodb.net/test?retryWrites=true&w=majority`, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(`mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}.@${config.MONGO_CLUSTER_NAME}.mongodb.net/test?retryWrites=true&w=majority`, {useNewUrlParser: true, useUnifiedTopology: true})
 .then(()=> console.log('DB connected!'))
 .catch(err =>{
 	console.log(`DB connection error: ${err.message}`);
