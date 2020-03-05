@@ -9,6 +9,17 @@ const Product = require('./models/products.js');
 
 const port = 3000;
 
+
+
+
+//connect to db
+const mongodbURI = `mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER_NAME}.mongodb.net/product?retryWrites=true&w=majority`;
+mongoose.connect(mongodbURI, {useNewUrlParser: true, useUnifiedTopology: true})
+.then(()=> console.log('Database connection established!'))
+.catch(err =>{
+	console.log(`Database connection error: ${err.message}`);
+});
+
 //test connectivity
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -20,15 +31,6 @@ app.use((req,res,next)=>{
 	console.log(`${req.method} request for ${req.url}`);
 	next(); // included to go to next milestone
 });
-
-//connect to db
-const mongodbURI = `mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER_NAME}.mongodb.net/product?retryWrites=true&w=majority`;
-mongoose.connect(mongodbURI, {useNewUrlParser: true, useUnifiedTopology: true})
-.then(()=> console.log('Database conenction established!'))
-.catch(err =>{
-	console.log(`Database connection error: ${err.message}`);
-});
-
 
 
 
@@ -48,8 +50,8 @@ app.get('/', (req, res) => res.send('Product Page!'));
 
 
 //get all products
-app.get('allProducts', (req,res)=>{
-	User.find().then(result =>{
+app.get('/allProducts', (req,res)=>{
+	Product.find().then(result =>{
 		res.send(result);
 	})
 });
@@ -60,22 +62,21 @@ app.get('allProducts', (req,res)=>{
 //register product
 app.post('/newProduct', (req,res)=>{
 	// checking if user is found in the db already
-	User.findOne({username:req.body.username}, (err, userResult)=>{
-		if (userResult){
-			res.send('Username already in use, please select another one.');
+	Product.findOne({product:req.body.product}, (err, productResult)=>{
+		if (productResult){
+			res.send('product already in database, please select another one.');
 
 		} else {
 
-	const hash = bcryptjs.hashSync(req.body.password); //hash the password
-	const user = new User({
+	const product = new Product({
 	    _id : new mongoose.Types.ObjectId,
-	    username : req.body.username,
-	    email : req.body.email,
-	    password : hash
+	    product : req.body.product,
+	    price : req.body.price,
+	    description : req.body.description
    });
 
 	//save to database and notify accordingly
-	user.save().then(result =>{
+	product.save().then(result =>{
 		res.send(result);
 	}).catch(err => res.send(err));		
 
@@ -89,19 +90,55 @@ app.post('/newProduct', (req,res)=>{
 
 //check product
 app.post('/checkProduct', (req,res)=>{
-	User.findOne({username:req.body.username}, (err, userResult)=>{
-		if (userResult){
-			if (bcryptjs.compareSync(req.body.password, userResult.password)){
-				res.send(userResult);
+	Product.findOne({product:req.body.product}, (err, productResult)=>{
+		if (productResult){
+			if (req.body.price, productResult.price){
+				res.send(productResult);
 			} else {
-				res.send('not authorized');
+				res.send('invalid product');
 			}
 		} else {
-			res.send('user not found. Please register or try again');
+			res.send('product not found. Please register this product or search again');
 		}
 	});
 });
 
+
+
+
+
+//delete product
+app.delete('/deleteProduct/:id', (req,res)=>{ //don't forget : when putting id
+	const idParam = req.params.id;
+	Product.findOne({_id:idParam}, (err,productD)=>{
+		if (productD){
+			Product.deleteOne({_id:idParam}, err =>{
+				res.send('Product deleted');
+			});
+		} else {
+			res.send('Product not found');
+		}
+	}).catch(err => res.send(err));
+});
+
+
+
+//update details of product
+app.patch('/updateProduct/:id',(req,res)=>{
+  const idParam = req.params.id;
+  Product.findById(idParam,(err,productD)=>{
+    const updatedProduct ={
+      product:req.body.product,
+      price:req.body.price,
+      description: req.body.description
+    };
+    Product.updateOne({_id:idParam}, updatedProduct).then(result=>{
+      res.send(result);
+    }).catch(err => res.send(err));
+
+  }).catch(err => res.send('not found'));
+  
+});
 
 
 

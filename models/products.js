@@ -3,7 +3,7 @@ const mongoose = require('mongoose'); //utilising mongoose means we must require
 const  userSchema = new mongoose.Schema({
   _id : mongoose.Schema.Types.ObjectId,
   product : String,
-  email : String,
+  price : String,
   description : String
 });
 
