@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcryptjs = require('bcryptjs');
-const config = require('./config.json');
+const config = require('./config-copy.json');
 const product = require('./models/groceryList.json');
 const User = require('./models/users.js');
 
