@@ -88,7 +88,7 @@ app.post('/registerUser', (req,res)=>{
 
 
 //get all user
-app.get('allUsers', (req,res)=>{
+app.get('/allUsers', (req,res)=>{
 	User.find().then(result =>{
 		res.send(result);
 	})
