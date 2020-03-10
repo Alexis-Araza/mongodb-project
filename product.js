@@ -6,6 +6,7 @@ const cors = require('cors');
 const bcryptjs = require('bcryptjs');
 const config = require('./config.json');
 const Product = require('./models/products.js');
+const User = require('./models/users.js')
 
 const port = 3000;
 
@@ -72,7 +73,8 @@ app.post('/newProduct', (req,res)=>{
 	    _id : new mongoose.Types.ObjectId,
 	    product : req.body.product,
 	    price : req.body.price,
-	    description : req.body.description
+	    description : req.body.description,
+	    user_id : req.body.userId
    });
 
 	//save to database and notify accordingly
@@ -130,7 +132,7 @@ app.patch('/updateProduct/:id',(req,res)=>{
     const updatedProduct ={
       product:req.body.product,
       price:req.body.price,
-      description: req.body.description
+      description: req.body.description,
     };
     Product.updateOne({_id:idParam}, updatedProduct).then(result=>{
       res.send(result);
